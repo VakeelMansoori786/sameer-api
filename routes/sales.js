@@ -93,5 +93,30 @@ router.delete('/:id', auth, async (req, res) => {
 
 
 
+router.get('/unpaid/:customer_id', auth, async (req, res) => {
+  const customer_id = req.params.customer_id;
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT
+id,
+invoice_no,
+sale_date,
+grand_total,
+balance_amount
+FROM sm_sales
+WHERE customer_id=? 
+AND balance_amount > 0
+AND (status='Invoice' or status='Delivery')
+ORDER BY sale_date;`,
+      [customer_id]
+    );
+
+    res.json(rows);   // ✅ return full array
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
