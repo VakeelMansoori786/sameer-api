@@ -6,9 +6,14 @@ const auth = require('../middleware/auth');
 
 // CREATE supplier
 router.post('/create', auth, async (req, res) => {
-  const { name, email, phone, address,trn } = req.body;
+  const { name, phone, telephone, email, address, trn, contact_person, credit_limit } = req.body;
+
   try {
-    await pool.query(`CALL sm_suppliers_crud('CREATE', NULL, ?, ?, ?, ?,?)`, [name, phone, email, address,trn]);
+    await pool.query(
+      `CALL sm_suppliers_crud('CREATE', NULL, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, phone, telephone, email, address, trn, contact_person, credit_limit]
+    );
+
     res.json({ message: 'Supplier created' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -18,7 +23,9 @@ router.post('/create', auth, async (req, res) => {
 // READ all suppliers
 router.get('/read', auth, async (req, res) => {
   try {
-    const [rows] = await pool.query(`CALL sm_suppliers_crud('READ', NULL, NULL, NULL, NULL, NULL, NULL)`);
+    const [rows] = await pool.query(
+      `CALL sm_suppliers_crud('READ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`
+    );
     res.json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -28,8 +35,12 @@ router.get('/read', auth, async (req, res) => {
 // READ ONE supplier
 router.get('/get/:id', auth, async (req, res) => {
   const id = req.params.id;
+
   try {
-    const [rows] = await pool.query(`CALL sm_suppliers_crud('READONE', ?, NULL, NULL, NULL, NULL, NULL)`, [id]);
+    const [rows] = await pool.query(
+      `CALL sm_suppliers_crud('READONE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+      [id]
+    );
     res.json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -38,9 +49,14 @@ router.get('/get/:id', auth, async (req, res) => {
 
 // UPDATE supplier
 router.put('/update', auth, async (req, res) => {
-  const { id,name, email, phone, address,trn } = req.body;
+  const { id, name, phone, telephone, email, address, trn, contact_person, credit_limit } = req.body;
+
   try {
-    await pool.query(`CALL sm_suppliers_crud('UPDATE', ?, ?, ?, ?, ?, ?)`, [id, name, phone, email, address,trn]);
+    await pool.query(
+      `CALL sm_suppliers_crud('UPDATE', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, name, phone, telephone, email, address, trn, contact_person, credit_limit]
+    );
+
     res.json({ message: 'Supplier updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -50,8 +66,13 @@ router.put('/update', auth, async (req, res) => {
 // DELETE supplier
 router.delete('/:id', auth, async (req, res) => {
   const id = req.params.id;
+
   try {
-    await pool.query(`CALL sm_suppliers_crud('DELETE', ?, NULL, NULL, NULL, NULL, NULL)`, [id]);
+    await pool.query(
+      `CALL sm_suppliers_crud('DELETE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+      [id]
+    );
+
     res.json({ message: 'Supplier deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
