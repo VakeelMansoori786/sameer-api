@@ -6,12 +6,12 @@ const auth = require('../middleware/auth');
 
 // CREATE product
 router.post('/create', auth, async (req, res) => {
-  const { name, size, category_id, purchase_price, sale_price, stock, unit_id } = req.body;
+  const { name, purchase_price, sale_price, stock, unit_id } = req.body;
 
   try {
     await pool.query(
-      `CALL sm_products_crud('CREATE', NULL, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, size, category_id, purchase_price, sale_price, stock, unit_id]
+      `CALL sm_products_crud('CREATE', NULL, ?, ?, ?, ?, ?)`,
+      [name, purchase_price, sale_price, stock, unit_id]
     );
 
     res.json({ message: 'Product created' });
@@ -24,7 +24,7 @@ router.post('/create', auth, async (req, res) => {
 router.get('/read', auth, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `CALL sm_products_crud('READ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`
+      `CALL sm_products_crud('READ', NULL, NULL, NULL, NULL, NULL, NULL)`
     );
     res.json(rows[0]);
   } catch (err) {
@@ -38,7 +38,7 @@ router.get('/get/:id', auth, async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `CALL sm_products_crud('READONE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+      `CALL sm_products_crud('READONE', ?, NULL, NULL, NULL, NULL, NULL)`,
       [id]
     );
     res.json(rows[0]);
@@ -49,12 +49,12 @@ router.get('/get/:id', auth, async (req, res) => {
 
 // UPDATE product
 router.put('/update', auth, async (req, res) => {
-  const { id, name, size, category_id, purchase_price, sale_price, stock, unit_id } = req.body;
+  const { id, name, purchase_price, sale_price, stock, unit_id } = req.body;
 
   try {
     await pool.query(
-      `CALL sm_products_crud('UPDATE', ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, name, size, category_id, purchase_price, sale_price, stock, unit_id]
+      `CALL sm_products_crud('UPDATE', ?, ?, ?, ?, ?, ?)`,
+      [id, name, purchase_price, sale_price, stock, unit_id]
     );
 
     res.json({ message: 'Product updated' });
@@ -69,7 +69,7 @@ router.delete('/delete/:id', auth, async (req, res) => {
 
   try {
     await pool.query(
-      `CALL sm_products_crud('DELETE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+      `CALL sm_products_crud('DELETE', ?, NULL, NULL, NULL, NULL, NULL)`,
       [id]
     );
 
@@ -85,10 +85,11 @@ router.get('/search/:name', auth, async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT id, name, size, sale_price, stock 
-       FROM sm_products 
-       WHERE name LIKE CONCAT('%', ?, '%') 
-       ORDER BY name ASC
+      `SELECT p.id, p.name,u.name unit, p.sale_price, p.stock 
+       FROM sm_products p
+       join sm_units u on u.id=p.unit_id
+       WHERE p.name LIKE CONCAT('%', ?, '%') 
+       ORDER BY p.name ASC
        LIMIT 20`,
       [name]
     );
