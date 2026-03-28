@@ -43,4 +43,15 @@ router.get('/get-all-table', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// DASHBOARD user
+router.post('/table_range', auth, async (req, res) => {
+  const { table, from, to } = req.body;
+  try {
+   const [rows] =  await pool.query(`CALL sm_tables_range(?, ?, ?)`, [table, from, to]);
+  res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
