@@ -9,12 +9,12 @@ router.post('/create', auth, async (req, res) => {
   const { name, purchase_price, sale_price, stock, unit_id } = req.body;
 
   try {
-    await pool.query(
+    const [rows] = await pool.query(
       `CALL sm_products_crud('CREATE', NULL, ?, ?, ?, ?, ?)`,
       [name, purchase_price, sale_price, stock, unit_id]
     );
 
-    res.json({ message: 'Product created' });
+    res.json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
