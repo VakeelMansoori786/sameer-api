@@ -9,12 +9,12 @@ const auth = require('../middleware/auth');
 // CREATE purchase
 router.post('/create', auth, async (req, res) => {
 
-  const { supplier_id, total, discount, vat, grand_total, purchase_date, items, status } = req.body;
+  const { supplier_id, total, discount, vat, grand_total, purchase_date, items, status,payment_type } = req.body;
 
   try {
 
     const [rows] = await pool.query(
-      `CALL sm_purchases_crud(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `CALL sm_purchases_crud(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
       [
         'CREATE',               // p_action
         null,                   // p_id
@@ -25,7 +25,8 @@ router.post('/create', auth, async (req, res) => {
         grand_total,            // p_grand_total
         purchase_date,          // p_purchase_date
         status,
-        JSON.stringify(items)
+        JSON.stringify(items),
+        payment_type
       ]
     );
 
@@ -45,7 +46,7 @@ router.get('/read', auth, async (req, res) => {
   try {
 
     const [rows] = await pool.query(
-      `CALL sm_purchases_crud('READ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`
+      `CALL sm_purchases_crud('READ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`
     );
 
     res.json(rows[0]);
@@ -65,7 +66,7 @@ router.get('/get/:id', auth, async (req, res) => {
   try {
 
     const [rows] = await pool.query(
-      `CALL sm_purchases_crud('READONE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+      `CALL sm_purchases_crud('READONE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
       [id]
     );
 
@@ -84,12 +85,12 @@ router.get('/get/:id', auth, async (req, res) => {
 // UPDATE purchase
 router.put('/update', auth, async (req, res) => {
 
-  const { id, supplier_id, total, discount, vat, grand_total, purchase_date, items, status } = req.body;
+  const { id, supplier_id, total, discount, vat, grand_total, purchase_date, items, status,payment_type } = req.body;
 
   try {
 
     await pool.query(
-      `CALL sm_purchases_crud(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `CALL sm_purchases_crud(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
       [
         'UPDATE',
         id,
@@ -100,7 +101,8 @@ router.put('/update', auth, async (req, res) => {
         grand_total,
         purchase_date,
         status,
-        JSON.stringify(items)
+        JSON.stringify(items),
+        payment_type
       ]
     );
 
@@ -121,7 +123,7 @@ router.delete('/:id', auth, async (req, res) => {
   try {
 
     await pool.query(
-      `CALL sm_purchases_crud('DELETE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
+      `CALL sm_purchases_crud('DELETE', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)`,
       [id]
     );
 
