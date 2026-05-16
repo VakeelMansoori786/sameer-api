@@ -8,10 +8,10 @@ const auth = require('../middleware/auth');
 
 router.post('/customer-ledger', auth, async (req, res) => {
   try {
-      const { customer_id, from, to } = req.body;
+      const { customer_id, from, to,report_type } = req.body;
      const [rows] = await pool.query(
-    'CALL sm_customer_ledger_report(?,?,?)',
-    [customer_id, from || null, to || null]
+    'CALL sm_customer_ledger_report(?,?,?,?)',
+    [customer_id, from || null, to || null,report_type]
   );
 
     res.json(rows[0]);
