@@ -118,5 +118,23 @@ ORDER BY sale_date;`,
     res.status(500).json({ error: err.message });
   }
 });
+// GET SALE ITEMS
+router.get('/items', auth, async (req, res) => {
+  const customer_id = req.query.customer_id || 0;
+  const product_id = req.query.product_id || 0;
 
+  try {
+    const [rows] = await pool.query(
+      `CALL sm_get_sale_items_by_product_customer(?, ?)`,
+      [customer_id, product_id]
+    );
+
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
 module.exports = router;
