@@ -119,9 +119,9 @@ ORDER BY sale_date;`,
   }
 });
 // GET SALE ITEMS
-router.get('/items', auth, async (req, res) => {
-  const customer_id = req.query.customer_id || 0;
-  const product_id = req.query.product_id || 0;
+router.get('/items/:customer_id/:product_id', auth, async (req, res) => {
+  const customer_id = req.params.customer_id || 0;
+  const product_id = req.params.product_id || 0;
 
   try {
     const [rows] = await pool.query(
