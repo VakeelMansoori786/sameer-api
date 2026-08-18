@@ -221,7 +221,7 @@ router.get('/items/:customer_id/:product_id', auth, async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `CALL smn_get_sale_items_by_product_customer(?, ?)`,
+      `CALL sm_get_sale_items_by_product_customer(?, ?)`,
       [customer_id, product_id]
     );
 
